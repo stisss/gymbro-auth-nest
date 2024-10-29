@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Query,
   Put,
+  NotFoundException,
 } from '@nestjs/common';
 import { OrderByItem, ParseIntOptional } from '../pipes';
 import { UsersService } from './users.service';
@@ -38,8 +39,12 @@ export class UsersController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.findOne(id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    const user = await this.usersService.findOne(id);
+
+    if (!user) throw new NotFoundException('User not found');
+
+    return user;
   }
 
   @Put(':id')

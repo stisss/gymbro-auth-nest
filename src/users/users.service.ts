@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma, User } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -9,6 +14,7 @@ import {
 import { UpdateUserDto } from './dto/update-user.dto';
 import { OrderByItem } from '../pipes/parse-order-by.pipe';
 import { UserSortableFields } from './parse-order-by-user-fields.pipe';
+import { PRISMA_ERRORS } from 'src/prisma/constants';
 
 type QueryParams = {
   skip?: number;
@@ -21,9 +27,24 @@ type QueryParams = {
 export class UsersService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  create(dto: CreateUserDto): Promise<User | null> {
+  async create(dto: CreateUserDto): Promise<User | null> {
     const data = createUserDtoToUserCreateInput(dto);
-    return this.prismaService.user.create({ data });
+
+    try {
+      const result = await this.prismaService.user.create({ data });
+      return result;
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        if (e.code === PRISMA_ERRORS.UniqueConstraintValidation) {
+          // TODO: domain error
+          throw new UnprocessableEntityException(
+            'Unique constraint validation',
+          );
+        }
+      }
+
+      throw new InternalServerErrorException();
+    }
   }
 
   findAll(queryParams: QueryParams): Promise<User[]> {
@@ -42,16 +63,47 @@ export class UsersService {
     return this.prismaService.user.findUnique({ where: { id } });
   }
 
-  update(params: { id: number; dto: UpdateUserDto }) {
+  async update(params: { id: number; dto: UpdateUserDto }) {
     const { id, dto } = params;
     const data = updateUserDtoToUserUpdateInput(dto);
-    console.log(params);
-    return this.prismaService.user.update({ where: { id }, data });
+
+    try {
+      const user = await this.prismaService.user.update({
+        where: { id },
+        data,
+      });
+
+      return user;
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        if (e.code === PRISMA_ERRORS.UniqueConstraintValidation) {
+          throw new UnprocessableEntityException(
+            'Unique constraint validation',
+          );
+        }
+
+        if (e.code === PRISMA_ERRORS.NotFound) {
+          throw new NotFoundException();
+        }
+      }
+
+      throw new NotFoundException();
+    }
   }
 
-  remove(id: number) {
-    return this.prismaService.user.delete({
-      where: { id },
-    });
+  async remove(id: number) {
+    try {
+      await this.prismaService.user.delete({
+        where: { id },
+      });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        if (e.code === PRISMA_ERRORS.NotFound) {
+          throw new NotFoundException();
+        }
+      }
+
+      throw new InternalServerErrorException();
+    }
   }
 }
