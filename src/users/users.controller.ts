@@ -3,13 +3,20 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
+  ParseIntPipe,
+  Query,
+  Put,
 } from '@nestjs/common';
+import { OrderByItem, ParseIntOptional } from '../pipes';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import {
+  ParseOrderByUserFields,
+  UserSortableFields,
+} from './parse-order-by-user-fields.pipe';
 
 @Controller('users')
 export class UsersController {
@@ -21,22 +28,30 @@ export class UsersController {
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAll(
+    @Query('skip', ParseIntOptional) skip?: number,
+    @Query('take', ParseIntOptional) take?: number,
+    @Query('orderBy', ParseOrderByUserFields)
+    orderBy?: OrderByItem<UserSortableFields>[],
+  ) {
+    return this.usersService.findAll({ orderBy, skip, take });
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @Put(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.usersService.update({ id, dto: updateUserDto });
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.remove(id);
   }
 }
