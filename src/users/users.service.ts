@@ -19,7 +19,6 @@ import { PRISMA_ERRORS } from 'src/prisma/constants';
 type QueryParams = {
   skip?: number;
   take?: number;
-  where?: Prisma.UserWhereInput;
   orderBy?: OrderByItem<UserSortableFields>[];
 };
 
