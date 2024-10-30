@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { hashPassword } from 'utils';
+import { hashPassword } from '../utils';
 
 export function createUserDtoToUserCreateInput(
   dto: CreateUserDto,

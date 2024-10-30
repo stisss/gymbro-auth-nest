@@ -4,7 +4,7 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { Prisma, User } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import {
@@ -14,7 +14,7 @@ import {
 import { UpdateUserDto } from './dto/update-user.dto';
 import { OrderByItem } from '../pipes/parse-order-by.pipe';
 import { UserSortableFields } from './parse-order-by-user-fields.pipe';
-import { PRISMA_ERRORS } from 'src/prisma/constants';
+import { PRISMA_ERRORS } from '../prisma/constants';
 
 type QueryParams = {
   skip?: number;
