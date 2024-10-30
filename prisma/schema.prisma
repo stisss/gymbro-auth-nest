@@ -14,9 +14,21 @@ datasource db {
 }
 
 model User {
-  id          Int       @default(autoincrement()) @id
-  login       String    @unique
-  email       String    @unique
-  password    String
-  createdAt   DateTime  @default(now())
+  id        String   @id @default(uuid())
+  login     String   @unique
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  clients   Client[]
+}
+
+model Client {
+  id           String   @id @default(uuid())
+  name         String   @unique
+  secret       String   @default(uuid())
+  createdAt    DateTime @default(now())
+  redirectUris String[]
+  scopes       String[]
+  createdBy    User     @relation(fields: [createdById], references: [id])
+  createdById  String
 }

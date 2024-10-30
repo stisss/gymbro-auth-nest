@@ -58,11 +58,11 @@ export class UsersService {
     return this.prismaService.user.findMany({ ...queryParams, orderBy });
   }
 
-  findOne(id: number): Promise<User | null> {
+  findOne(id: string): Promise<User | null> {
     return this.prismaService.user.findUnique({ where: { id } });
   }
 
-  async update(params: { id: number; dto: UpdateUserDto }) {
+  async update(params: { id: string; dto: UpdateUserDto }) {
     const { id, dto } = params;
     const data = updateUserDtoToUserUpdateInput(dto);
 
@@ -90,7 +90,7 @@ export class UsersService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     try {
       await this.prismaService.user.delete({
         where: { id },
