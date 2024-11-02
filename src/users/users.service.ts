@@ -62,6 +62,10 @@ export class UsersService {
     return this.prismaService.user.findUnique({ where: { id } });
   }
 
+  findByLogin(login: string): Promise<User | null> {
+    return this.prismaService.user.findUnique({ where: { login } });
+  }
+
   async update(params: { id: string; dto: UpdateUserDto }) {
     const { id, dto } = params;
     const data = updateUserDtoToUserUpdateInput(dto);
