@@ -4,9 +4,20 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { validate } from './config/env.validation';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [UsersModule, ConfigModule.forRoot(), PrismaModule],
+  imports: [
+    UsersModule,
+    PrismaModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validate,
+      envFilePath: ['.env.local', '.env'],
+    }),
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
