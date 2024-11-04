@@ -11,7 +11,7 @@ export type JwtPayloadUser = {
 };
 
 export function signJwt(payloadUser: JwtPayloadUser, secret: string): string {
-  const token = sign(payloadUser, secret, {
+  const token = sign({ user: payloadUser }, secret, {
     algorithm: 'HS256',
     expiresIn: '1h',
   });

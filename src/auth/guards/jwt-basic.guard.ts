@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { verifyJwt } from '../utils';
 
 @Injectable()
-export class JwtBasicGuardGuard implements CanActivate {
+export class JwtBasicGuard implements CanActivate {
   constructor(private readonly configService: ConfigService) {}
   canActivate(
     context: ExecutionContext,
@@ -16,7 +16,7 @@ export class JwtBasicGuardGuard implements CanActivate {
 
       return !!verifyJwt(token, this.configService.get('JWT_SECRET'));
     } catch (e) {
-      console.error(e);
+      console.error(e?.message, e?.status);
 
       return false;
     }

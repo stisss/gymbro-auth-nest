@@ -13,7 +13,7 @@ import {
 } from './utils';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { OrderByItem } from '../pipes/parse-order-by.pipe';
-import { UserSortableFields } from './parse-order-by-user-fields.pipe';
+import { UserSortableFields } from './enhancers/parse-order-by-user-fields.pipe';
 import { PRISMA_ERRORS } from '../prisma/constants';
 
 type QueryParams = {

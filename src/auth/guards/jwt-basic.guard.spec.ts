@@ -1,5 +1,5 @@
 import { ConfigService } from '@nestjs/config';
-import { JwtBasicGuardGuard } from './jwt-basic-guard.guard';
+import { JwtBasicGuard } from './jwt-basic.guard';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext } from '@nestjs/common';
 import { signJwt } from '../utils';
@@ -11,8 +11,8 @@ const USER_PAYLOAD = { id: 'id', login: 'login' };
 const VALID_TOKEN = signJwt(USER_PAYLOAD, TESTING_SECRET);
 const INVALID_TOKEN = signJwt(USER_PAYLOAD, NOT_TESTING_SECRET);
 
-describe('JwtBasicGuardGuard', () => {
-  let guard: JwtBasicGuardGuard;
+describe('JwtBasicGuard', () => {
+  let guard: JwtBasicGuard;
   let configService: ConfigService;
 
   const mockConfigService = {
@@ -22,7 +22,7 @@ describe('JwtBasicGuardGuard', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        JwtBasicGuardGuard,
+        JwtBasicGuard,
         {
           provide: ConfigService,
           useValue: mockConfigService,
@@ -30,7 +30,7 @@ describe('JwtBasicGuardGuard', () => {
       ],
     }).compile();
 
-    guard = module.get<JwtBasicGuardGuard>(JwtBasicGuardGuard);
+    guard = module.get<JwtBasicGuard>(JwtBasicGuard);
     configService = module.get<ConfigService>(ConfigService);
   });
 
