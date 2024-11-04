@@ -5,10 +5,10 @@ import {
   Body,
   Param,
   Delete,
-  ParseIntPipe,
   Query,
   Put,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { OrderByItem, ParseIntOptional } from '../pipes';
 import { UsersService } from './users.service';
@@ -17,17 +17,21 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import {
   ParseOrderByUserFields,
   UserSortableFields,
-} from './parse-order-by-user-fields.pipe';
+} from './enhancers/parse-order-by-user-fields.pipe';
+import { JwtAdminGuard } from '../auth/guards/jwt-admin.guard';
+import { UserRudGuard } from './enhancers/user-rud.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @UseGuards(JwtAdminGuard)
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
+  @UseGuards(JwtAdminGuard)
   @Get()
   findAll(
     @Query('skip', ParseIntOptional) skip?: number,
@@ -38,6 +42,7 @@ export class UsersController {
     return this.usersService.findAll({ orderBy, skip, take });
   }
 
+  @UseGuards(UserRudGuard)
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const user = await this.usersService.findOne(id);
@@ -47,11 +52,13 @@ export class UsersController {
     return user;
   }
 
+  @UseGuards(UserRudGuard)
   @Put(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update({ id, dto: updateUserDto });
   }
 
+  @UseGuards(UserRudGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);

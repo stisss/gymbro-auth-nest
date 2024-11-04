@@ -13,7 +13,7 @@ import {
 } from './utils';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { OrderByItem } from '../pipes/parse-order-by.pipe';
-import { UserSortableFields } from './parse-order-by-user-fields.pipe';
+import { UserSortableFields } from './enhancers/parse-order-by-user-fields.pipe';
 import { PRISMA_ERRORS } from '../prisma/constants';
 
 type QueryParams = {
@@ -60,6 +60,10 @@ export class UsersService {
 
   findOne(id: string): Promise<User | null> {
     return this.prismaService.user.findUnique({ where: { id } });
+  }
+
+  findByLogin(login: string): Promise<User | null> {
+    return this.prismaService.user.findUnique({ where: { login } });
   }
 
   async update(params: { id: string; dto: UpdateUserDto }) {

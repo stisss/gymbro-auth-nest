@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ParseOrderByPipe } from '../pipes/parse-order-by.pipe';
+import { ParseOrderByPipe } from '../../pipes/parse-order-by.pipe';
 
 export type UserSortableFields = 'email' | 'login';
 
