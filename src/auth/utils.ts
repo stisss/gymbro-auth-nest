@@ -1,5 +1,7 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { sign, verify } from 'jsonwebtoken';
+import { CreateUserDto } from '../users/dto/create-user.dto';
+import { SignUpDto } from './dto/sign-up.dto';
 
 export type JwtPayload = {
   user: JwtPayloadUser;
@@ -25,4 +27,8 @@ export function verifyJwt(token: string, secret: string): JwtPayload {
   } catch (e) {
     throw new UnauthorizedException();
   }
+}
+
+export function signUpDtoTocreateUserDto(dto: SignUpDto): CreateUserDto {
+  return dto as CreateUserDto;
 }
