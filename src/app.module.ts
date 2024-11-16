@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { validate } from './config/env.validation';
 import { AuthModule } from './auth/auth.module';
+import { ClientsModule } from './clients/clients.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { AuthModule } from './auth/auth.module';
       envFilePath: ['.env.local', '.env'],
     }),
     AuthModule,
+    ClientsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
