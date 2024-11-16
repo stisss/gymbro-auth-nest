@@ -4,33 +4,31 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { Client, Prisma } from '@prisma/client';
+import { CreateClientDto } from './dto/create-client.dto';
+import { UpdateClientDto } from './dto/update-client.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma, User } from '@prisma/client';
-import { CreateUserDto } from './dto/create-user.dto';
-import {
-  createUserDtoToUserCreateInput,
-  updateUserDtoToUserUpdateInput,
-} from './utils';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { OrderByItem } from '../pipes/parse-order-by.pipe';
-import { UserSortableFields } from './enhancers/parse-order-by-user-fields.pipe';
 import { PRISMA_ERRORS } from '../prisma/constants';
 
 type QueryParams = {
+  createdById?: string;
   skip?: number;
   take?: number;
-  orderBy?: OrderByItem<UserSortableFields>[];
 };
 
 @Injectable()
-export class UsersService {
+export class ClientsService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(dto: CreateUserDto): Promise<User | null> {
-    const data = createUserDtoToUserCreateInput(dto);
-
+  async create(
+    data: CreateClientDto,
+    createdById: string,
+  ): Promise<Client | null> {
+    // TODO ogarnij relacje
     try {
-      const result = await this.prismaService.user.create({ data });
+      const result = await this.prismaService.client.create({
+        data: { ...data, createdById },
+      });
       return result;
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -46,34 +44,26 @@ export class UsersService {
     }
   }
 
-  findAll(queryParams: QueryParams): Promise<User[]> {
-    const orderBy = queryParams.orderBy?.reduce(
-      (prev, curr) => ({
-        ...prev,
-        [curr.field]: curr.direction,
-      }),
-      {},
-    ) as Prisma.UserOrderByWithRelationInput;
-
-    return this.prismaService.user.findMany({ ...queryParams, orderBy });
+  findAll({ skip, take, createdById }: QueryParams): Promise<Client[]> {
+    return this.prismaService.client.findMany({
+      where: { createdById },
+      skip,
+      take,
+      orderBy: { createdAt: 'desc' },
+    });
   }
 
-  findOne(id: string): Promise<User | null> {
-    return this.prismaService.user.findUnique({ where: { id } });
+  findOne(id: string) {
+    return this.prismaService.client.findUnique({ where: { id } });
   }
 
-  findByLogin(login: string): Promise<User | null> {
-    return this.prismaService.user.findUnique({ where: { login } });
-  }
-
-  async update(params: { id: string; dto: UpdateUserDto }) {
+  async update(params: { id: string; dto: UpdateClientDto }) {
     const { id, dto } = params;
-    const data = updateUserDtoToUserUpdateInput(dto);
 
     try {
-      const user = await this.prismaService.user.update({
+      const user = await this.prismaService.client.update({
         where: { id },
-        data,
+        data: dto,
       });
 
       return user;

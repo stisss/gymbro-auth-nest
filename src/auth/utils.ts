@@ -18,7 +18,7 @@ export function signJwt(payloadUser: JwtPayloadUser, secret: string): string {
   return token;
 }
 
-export function verifyJwt(token: string, secret: string) {
+export function verifyJwt(token: string, secret: string): JwtPayload {
   try {
     const payload = verify(token, secret) as JwtPayload;
     return payload;
