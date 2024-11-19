@@ -8,7 +8,17 @@ import { UsersService } from '../users/users.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
 import { compareStrings } from '../utils';
-import { signJwt, signUpDtoTocreateUserDto } from './utils';
+import {
+  signAccessToken,
+  signRefreshToken,
+  signUpDtoTocreateUserDto,
+} from './utils';
+import { User } from '@prisma/client';
+
+type Tokens = {
+  accessToken: string;
+  refreshToken: string;
+};
 
 @Injectable()
 export class AuthService {
@@ -17,24 +27,20 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async signUp(dto: SignUpDto): Promise<string> {
+  async signUp(dto: SignUpDto): Promise<Tokens> {
     try {
       const createUserDto = signUpDtoTocreateUserDto(dto);
       const user = await this.usersService.create(createUserDto);
 
-      const token = signJwt(
-        { id: user.id, login: user.login },
-        this.configService.get('JWT_SECRET'),
-      );
-
-      return token;
+      const tokens = this.#generateTokens(user);
+      return tokens;
     } catch (e) {
       // TODO: domain error
       throw new InternalServerErrorException();
     }
   }
 
-  async signIn(data: SignInDto): Promise<string> {
+  async signIn(data: SignInDto): Promise<Tokens> {
     const { login, password } = data;
     const user = await this.usersService.findByLogin(login);
 
@@ -50,11 +56,25 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const token = signJwt(
-      { id: user.id, login: user.login },
+    const tokens = this.#generateTokens(user);
+    return tokens;
+  }
+
+  #generateTokens(user: User) {
+    const payload = { id: user.id, login: user.login };
+
+    const accessToken = signAccessToken(
+      payload,
+      this.configService.get('JWT_SECRET'),
+    );
+    const refreshToken = signRefreshToken(
+      payload,
       this.configService.get('JWT_SECRET'),
     );
 
-    return token;
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 }

@@ -1,7 +1,7 @@
 import { ExecutionContext } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
-import { signJwt } from '../../auth/utils';
+import { signAccessToken } from '../../auth/utils';
 import { UsersService } from '../users.service';
 import { UserRudGuard } from './user-rud.guard';
 
@@ -13,10 +13,10 @@ const ADMIN_PAYLOAD = { id: VALID_ID, login: 'login', isAdmin: true };
 const VALID_USER_PAYLOAD = { id: VALID_ID, login: 'login', isAdmin: false };
 const USER_PAYLOAD = { id: 'id', login: 'login', isAdmin: false };
 
-const ADMIN_TOKEN = signJwt(ADMIN_PAYLOAD, TESTING_SECRET);
-const VALID_USER_TOKEN = signJwt(VALID_USER_PAYLOAD, TESTING_SECRET);
-const USER_TOKEN = signJwt(USER_PAYLOAD, TESTING_SECRET);
-const INVALID_TOKEN = signJwt(ADMIN_PAYLOAD, NOT_TESTING_SECRET);
+const ADMIN_TOKEN = signAccessToken(ADMIN_PAYLOAD, TESTING_SECRET);
+const VALID_USER_TOKEN = signAccessToken(VALID_USER_PAYLOAD, TESTING_SECRET);
+const USER_TOKEN = signAccessToken(USER_PAYLOAD, TESTING_SECRET);
+const INVALID_TOKEN = signAccessToken(ADMIN_PAYLOAD, NOT_TESTING_SECRET);
 
 describe('UserRudGuard', () => {
   let guard: UserRudGuard;
