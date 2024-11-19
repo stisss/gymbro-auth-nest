@@ -1,6 +1,7 @@
 import {
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -14,6 +15,7 @@ import {
   signUpDtoTocreateUserDto,
 } from './utils';
 import { User } from '@prisma/client';
+import { CustomRequest } from './guards/CustomRequest';
 
 type Tokens = {
   accessToken: string;
@@ -58,6 +60,17 @@ export class AuthService {
 
     const tokens = this.#generateTokens(user);
     return tokens;
+  }
+
+  async me(request: CustomRequest): Promise<User> {
+    try {
+      const userId = request.userId;
+
+      return this.usersService.findOne(userId);
+    } catch (e) {
+      // TODO: domain error
+      throw new NotFoundException();
+    }
   }
 
   #generateTokens(user: User) {
