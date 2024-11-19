@@ -3,16 +3,16 @@ import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { JwtAdminGuard } from './jwt-admin.guard';
 import { UsersService } from '../../users/users.service';
-import { signJwt } from '../utils';
+import { signAccessToken } from '../utils';
 
 const TESTING_SECRET = 'testing-jwt';
 const NOT_TESTING_SECRET = 'invalid-secret';
 const ADMIN_PAYLOAD = { id: 'admin_id', login: 'login', isAdmin: true };
 const USER_PAYLOAD = { id: 'id', login: 'login', isAdmin: false };
 
-const ADMIN_TOKEN = signJwt(ADMIN_PAYLOAD, TESTING_SECRET);
-const USER_TOKEN = signJwt(USER_PAYLOAD, TESTING_SECRET);
-const INVALID_TOKEN = signJwt(ADMIN_PAYLOAD, NOT_TESTING_SECRET);
+const ADMIN_TOKEN = signAccessToken(ADMIN_PAYLOAD, TESTING_SECRET);
+const USER_TOKEN = signAccessToken(USER_PAYLOAD, TESTING_SECRET);
+const INVALID_TOKEN = signAccessToken(ADMIN_PAYLOAD, NOT_TESTING_SECRET);
 
 describe('JwtAdminGuard', () => {
   let guard: JwtAdminGuard;

@@ -2,14 +2,14 @@ import { ConfigService } from '@nestjs/config';
 import { JwtBasicGuard } from './jwt-basic.guard';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext } from '@nestjs/common';
-import { signJwt } from '../utils';
+import { signAccessToken } from '../utils';
 
 const TESTING_SECRET = 'testing-jwt';
 const NOT_TESTING_SECRET = 'invalid-secret';
 const USER_PAYLOAD = { id: 'id', login: 'login' };
 
-const VALID_TOKEN = signJwt(USER_PAYLOAD, TESTING_SECRET);
-const INVALID_TOKEN = signJwt(USER_PAYLOAD, NOT_TESTING_SECRET);
+const VALID_TOKEN = signAccessToken(USER_PAYLOAD, TESTING_SECRET);
+const INVALID_TOKEN = signAccessToken(USER_PAYLOAD, NOT_TESTING_SECRET);
 
 describe('JwtBasicGuard', () => {
   let guard: JwtBasicGuard;

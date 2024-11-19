@@ -3,6 +3,9 @@ import { sign, verify } from 'jsonwebtoken';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { SignUpDto } from './dto/sign-up.dto';
 
+const ACCESS_TOKEN_EXPIRES_IN = '1h';
+const REFRESH_TOKEN_EXPIRES_IN = '7d';
+
 export type JwtPayload = {
   user: JwtPayloadUser;
 };
@@ -12,11 +15,33 @@ export type JwtPayloadUser = {
   login: string;
 };
 
-export function signJwt(payloadUser: JwtPayloadUser, secret: string): string {
+export function signAccessToken(
+  payloadUser: JwtPayloadUser,
+  secret: string,
+): string {
+  const token = signJwt(payloadUser, secret, ACCESS_TOKEN_EXPIRES_IN);
+
+  return token;
+}
+
+export function signRefreshToken(
+  payloadUser: JwtPayloadUser,
+  secret: string,
+): string {
+  const token = signJwt(payloadUser, secret, REFRESH_TOKEN_EXPIRES_IN);
+  return token;
+}
+
+function signJwt(
+  payloadUser: JwtPayloadUser,
+  secret: string,
+  expiresIn: string,
+): string {
   const token = sign({ user: payloadUser }, secret, {
     algorithm: 'HS256',
-    expiresIn: '1h',
+    expiresIn,
   });
+
   return token;
 }
 
