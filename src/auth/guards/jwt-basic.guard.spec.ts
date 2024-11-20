@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
-import { JwtBasicGuard } from './jwt-basic.guard';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExecutionContext } from '@nestjs/common';
+import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { JwtBasicGuard } from './jwt-basic.guard';
 import { signAccessToken } from '../utils';
 
 const TESTING_SECRET = 'testing-jwt';
@@ -54,13 +54,23 @@ describe('JwtBasicGuard', () => {
     const ctx = mockExecutionContext({
       authorization: `Bearer ${INVALID_TOKEN}`,
     });
-    expect(guard.canActivate(ctx)).toBe(false);
+
+    try {
+      guard.canActivate(ctx);
+    } catch (e) {
+      expect(e).toBeInstanceOf(UnauthorizedException);
+    }
   });
 
   it("should return false when if theres no bearer token in request's headers", () => {
     const ctx = mockExecutionContext({
       authorization: `Bearer ${VALID_TOKEN}`,
     });
-    expect(guard.canActivate(ctx)).toBe(true);
+
+    try {
+      guard.canActivate(ctx);
+    } catch (e) {
+      expect(e).toBeInstanceOf(UnauthorizedException);
+    }
   });
 });
