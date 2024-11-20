@@ -1,4 +1,4 @@
-import { ExecutionContext } from '@nestjs/common';
+import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { signAccessToken } from '../../auth/utils';
@@ -88,8 +88,12 @@ describe('UserRudGuard', () => {
     expect(await guard.canActivate(ctx)).toBe(false);
   });
 
-  it('should return false if token is invalid', async () => {
+  it('should throw UnauthorizedException if token is invalid', async () => {
     const ctx = getMockedContext({ authorization: `Bearer ${INVALID_TOKEN}` });
-    expect(await guard.canActivate(ctx)).toBe(false);
+    try {
+      await guard.canActivate(ctx);
+    } catch (e) {
+      expect(e).toBeInstanceOf(UnauthorizedException);
+    }
   });
 });

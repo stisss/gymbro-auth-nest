@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { UsersService } from '../users.service';
@@ -30,6 +35,9 @@ export class UserRudGuard implements CanActivate {
       return adminGuard.canActivate(context);
     } catch (e) {
       console.error(e?.message, e?.status);
+      if (e instanceof UnauthorizedException) {
+        throw e;
+      }
 
       return false;
     }
