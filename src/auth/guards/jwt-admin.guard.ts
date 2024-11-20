@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { verifyJwt } from '../utils';
 import { UsersService } from '../../users/users.service';
@@ -27,6 +32,9 @@ export class JwtAdminGuard implements CanActivate {
       return user.isAdmin;
     } catch (e) {
       console.error(e?.message, e?.status);
+      if (e instanceof UnauthorizedException) {
+        throw e;
+      }
 
       return false;
     }
