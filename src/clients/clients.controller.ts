@@ -3,12 +3,12 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Query,
   Req,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
@@ -49,7 +49,7 @@ export class ClientsController {
   }
 
   @UseGuards(ClientRudGuard)
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto) {
     return this.clientsService.update({ id, dto: updateClientDto });
   }
