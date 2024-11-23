@@ -61,12 +61,12 @@ export class ClientsService {
     const { id, dto } = params;
 
     try {
-      const user = await this.prismaService.client.update({
+      const client = await this.prismaService.client.update({
         where: { id },
         data: dto,
       });
 
-      return user;
+      return client;
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         if (e.code === PRISMA_ERRORS.UniqueConstraintValidation) {
@@ -86,7 +86,7 @@ export class ClientsService {
 
   async remove(id: string): Promise<void> {
     try {
-      await this.prismaService.user.delete({
+      await this.prismaService.client.delete({
         where: { id },
       });
     } catch (e) {

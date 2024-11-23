@@ -29,7 +29,12 @@ model Client {
   secret       String   @default(uuid())
   createdAt    DateTime @default(now())
   redirectUris String[]
-  scopes       String[]
+  scopes       Scope[]
   createdBy    User     @relation(fields: [createdById], references: [id])
   createdById  String
+}
+
+enum Scope {
+  EMAIL
+  LOGIN
 }
