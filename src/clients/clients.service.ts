@@ -24,7 +24,6 @@ export class ClientsService {
     data: CreateClientDto,
     createdById: string,
   ): Promise<Client | null> {
-    // TODO ogarnij relacje
     try {
       const result = await this.prismaService.client.create({
         data: { ...data, createdById },
