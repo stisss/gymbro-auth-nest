@@ -1,5 +1,6 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { sign, verify } from 'jsonwebtoken';
+import { randomBytes } from 'crypto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { SignUpDto } from './dto/sign-up.dto';
 
@@ -56,4 +57,8 @@ export function verifyJwt(token: string, secret: string): JwtPayload {
 
 export function signUpDtoTocreateUserDto(dto: SignUpDto): CreateUserDto {
   return dto as CreateUserDto;
+}
+
+export function generateAuthCode(): string {
+  return randomBytes(20).toString('hex');
 }
