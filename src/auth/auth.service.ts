@@ -39,7 +39,7 @@ export class AuthService {
     private readonly clientsService: ClientsService,
     private readonly configService: ConfigService,
     private readonly consentsService: ConsentsService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
   async signUp(dto: SignUpDto): Promise<Tokens> {
