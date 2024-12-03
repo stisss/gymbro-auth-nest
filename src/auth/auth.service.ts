@@ -23,7 +23,7 @@ import {
 import { CustomRequest } from './guards/CustomRequest';
 import { AuthCodeDto } from './dto/auth-code.dto';
 import { ClientsService } from '../clients/clients.service';
-import { ConsentsService } from 'src/consents/consents.service';
+import { ConsentsService } from '../consents/consents.service';
 
 type Tokens = {
   accessToken: string;
@@ -39,7 +39,7 @@ export class AuthService {
     private readonly clientsService: ClientsService,
     private readonly configService: ConfigService,
     private readonly consentsService: ConsentsService,
-    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async signUp(dto: SignUpDto): Promise<Tokens> {
