@@ -14,27 +14,40 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  login     String   @unique
-  email     String   @unique
+  id        String    @id @default(uuid())
+  login     String    @unique
+  email     String    @unique
   password  String
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
   clients   Client[]
-  isAdmin   Boolean  @default(false)
+  isAdmin   Boolean   @default(false)
+  consents  Consent[]
 }
 
 model Client {
-  id           String   @id @default(uuid())
-  name         String   @unique
-  secret       String   @default(uuid())
-  createdAt    DateTime @default(now())
+  id           String    @id @default(uuid())
+  name         String    @unique
+  secret       String    @default(uuid())
+  createdAt    DateTime  @default(now())
   redirectUris String[]
   scopes       Scope[]
-  createdBy    User     @relation(fields: [createdById], references: [id])
+  createdBy    User      @relation(fields: [createdById], references: [id])
   createdById  String
+  consents     Consent[]
 }
 
 enum Scope {
   EMAIL
   LOGIN
+}
+
+model Consent {
+  id        String   @id @default(cuid())
+  scopes    Scope[]
+  userId    String
+  clientId  String
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  client Client @relation(fields: [clientId], references: [id])
 }

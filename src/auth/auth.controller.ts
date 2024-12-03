@@ -17,6 +17,7 @@ import { AuthService } from './auth.service';
 import { JwtBasicGuard } from './guards/jwt-basic.guard';
 import { CustomRequest } from './guards/CustomRequest';
 import { signAccessToken, verifyJwt } from './utils';
+import { AuthCodeDto } from './dto/auth-code.dto';
 
 const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
@@ -98,5 +99,11 @@ export class AuthController {
       sameSite: true,
     });
     res.status(HttpStatus.OK);
+  }
+
+  @UseGuards(JwtBasicGuard)
+  @Post('auth-code')
+  authCode(@Req() req: CustomRequest, @Body() authCodeDto: AuthCodeDto) {
+    return this.authService.generateAuthCode(req.userId, authCodeDto);
   }
 }

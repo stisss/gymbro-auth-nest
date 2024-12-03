@@ -1,3 +1,4 @@
+import { Scope } from '@prisma/client';
 import {
   arrayNotEmpty,
   ArrayNotEmpty,
@@ -5,11 +6,6 @@ import {
   IsEnum,
   IsString,
 } from 'class-validator';
-
-enum Scope {
-  EMAIL = 'EMAIL',
-  LOGIN = 'LOGIN',
-}
 
 export class CreateClientDto {
   @IsString()

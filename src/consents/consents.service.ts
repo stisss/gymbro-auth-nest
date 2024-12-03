@@ -4,29 +4,19 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { Client, Prisma } from '@prisma/client';
-import { CreateClientDto } from './dto/create-client.dto';
-import { UpdateClientDto } from './dto/update-client.dto';
+import { Consent, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { PRISMA_ERRORS } from '../prisma/constants';
-
-type QueryParams = {
-  createdById?: string;
-  skip?: number;
-  take?: number;
-};
+import { UpdateConsentDto } from './dto/update-consent.dto';
 
 @Injectable()
-export class ClientsService {
+export class ConsentsService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(
-    data: CreateClientDto,
-    createdById: string,
-  ): Promise<Client | null> {
+  async create(data: any): Promise<Consent | null> {
     try {
-      const result = await this.prismaService.client.create({
-        data: { ...data, createdById },
+      const result = await this.prismaService.consent.create({
+        data,
       });
       return result;
     } catch (e) {
@@ -43,29 +33,31 @@ export class ClientsService {
     }
   }
 
-  findAll({ skip, take, createdById }: QueryParams): Promise<Client[]> {
-    return this.prismaService.client.findMany({
-      where: { createdById },
-      skip,
-      take,
+  findAll(filter: { clientId?: string; userId?: string }): Promise<Consent[]> {
+    const { clientId, userId } = filter;
+    return this.prismaService.consent.findMany({
+      where: {
+        clientId,
+        userId,
+      },
       orderBy: { createdAt: 'desc' },
     });
   }
 
   findOne(id: string) {
-    return this.prismaService.client.findUnique({ where: { id } });
+    return this.prismaService.consent.findUnique({ where: { id } });
   }
 
-  async update(params: { id: string; dto: UpdateClientDto }) {
+  async update(params: { id: string; dto: UpdateConsentDto }) {
     const { id, dto } = params;
 
     try {
-      const client = await this.prismaService.client.update({
+      const consent = await this.prismaService.consent.update({
         where: { id },
         data: dto,
       });
 
-      return client;
+      return consent;
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         if (e.code === PRISMA_ERRORS.UniqueConstraintValidation) {
@@ -85,7 +77,7 @@ export class ClientsService {
 
   async remove(id: string): Promise<void> {
     try {
-      await this.prismaService.client.delete({
+      await this.prismaService.consent.delete({
         where: { id },
       });
     } catch (e) {
